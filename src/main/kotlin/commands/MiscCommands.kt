@@ -7,17 +7,31 @@ import revxrsal.commands.jda.actor.SlashCommandActor
 
 object MiscCommands {
     @Command("echo <message>")
-    suspend fun echo(sender: SlashCommandActor, message: String) = sender.reply(message)
+    fun echo(sender: SlashCommandActor, message: String) = sender.reply(message)
 
     val emojis = listOf("😀", "😁", "😂", "🤣", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "😍", "😘", "🥰", "😗", "😙")
 
     @Command("hello")
-    suspend fun hello(sender: SlashCommandActor) {
+    fun hello(sender: SlashCommandActor) {
         sender.reply("Hello ${sender.commandEvent().member!!.effectiveName}! ${emojis.random()}")
     }
 
     @Command("userinfo <member>")
-    suspend fun userInfo(sender: SlashCommandActor, member: Member) {
+    fun userInfo(sender: SlashCommandActor, member: Member) {
         EmbedBuilder()
+            .setTitle("User Info")
+            .setDescription(
+                """
+                **Username**: ${member.effectiveName}
+                **Nickname**: ${member.nickname}
+                **ID**: ${member.id}
+                **Joined Server**: <t:${member.timeJoined.toLocalDateTime().nano / 1000}:F>
+                **Roles**: ${member.roles.joinToString(", ") { it.name }}
+                **Is Bot**: ${member.user.isBot}
+            """.trimIndent()
+            )
+            .setColor(0x00FF00)
+            .build()
+            .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
     }
 }

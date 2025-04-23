@@ -2,7 +2,8 @@ package dev.shreyasayyengar
 
 import dev.shreyasayyengar.commands.MiscCommands
 import dev.shreyasayyengar.commands.ModerationCommands
-import dev.shreyasayyengar.commands.RoleManagement
+import dev.shreyasayyengar.commands.PointsCommands
+import dev.shreyasayyengar.commands.RoleManagementCommands
 import dev.shreyasayyengar.listeners.HousekeepingEventListener
 import dev.shreyasayyengar.util.Credentials
 import dev.shreyasayyengar.util.LocaleManager
@@ -27,8 +28,9 @@ object DiscordBot {
         .apply {
             register(
                 MiscCommands,
-                RoleManagement,
-                ModerationCommands
+                RoleManagementCommands,
+                ModerationCommands,
+                PointsCommands
             )
             accept(JDAVisitors.slashCommands(discordBot))
         }
