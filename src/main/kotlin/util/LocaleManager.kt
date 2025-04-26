@@ -7,7 +7,6 @@ object LocaleManager {
     val jsonData: String = javaClass.getResource("/messages.json").readText()
 //    val welcomeMessage: LocalisedMessage = deserialise()
 
-
     fun deserialise(jsonData: String) : LocalisedMessage {
         // if jsonData is a plain string, return Plain(jsonData)
         // if jsonData is an embed, return Embed(jsonData)

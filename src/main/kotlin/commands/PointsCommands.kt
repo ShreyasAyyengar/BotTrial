@@ -2,11 +2,14 @@ package dev.shreyasayyengar.commands
 
 import dev.shreyasayyengar.util.MongoService
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import revxrsal.commands.annotation.Command
 import revxrsal.commands.jda.actor.SlashCommandActor
+import revxrsal.commands.jda.annotation.CommandPermission
 import java.awt.Color
 
+@CommandPermission(Permission.ADMINISTRATOR)
 object PointsCommands {
     @Command("add-points <member> <amount>")
     suspend fun addPoints(sender: SlashCommandActor, member: Member, amount: Int) {

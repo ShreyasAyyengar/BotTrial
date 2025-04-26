@@ -11,7 +11,7 @@ import java.awt.Color
 object RoleManagementCommands {
     @Command("assign-role <member> <role>")
     @Description("Assigns a role to the user")
-    suspend fun assignRole(sender: SlashCommandActor, member: Member, role: Role) {
+    fun assignRole(sender: SlashCommandActor, member: Member, role: Role) {
         if (member.roles.contains(role)) {
             EmbedBuilder()
                 .setTitle("Error while executing command...")
@@ -22,19 +22,31 @@ object RoleManagementCommands {
             return
         }
 
-        sender.commandEvent().guild!!.addRoleToMember(member, role).queue()
+        sender.commandEvent().guild!!.addRoleToMember(member, role).queue(
+            {
+                EmbedBuilder()
+                    .setTitle("Role Assigned!")
+                    .setDescription("Successfully assigned the role `${role.name}` to ${member.asMention}!")
+                    .setColor(Color.GREEN)
+                    .build()
+                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            },
+            {
+                EmbedBuilder()
+                    .setTitle("Error while executing command...")
+                    .setDescription("Insufficient permissions to assign the role!")
+                    .setColor(Color.RED)
+                    .build()
+                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            }
+        )
 
-        EmbedBuilder()
-            .setTitle("Role Assigned!")
-            .setDescription("Successfully assigned the role `${role.name}` to ${member.asMention}!")
-            .setColor(Color.GREEN)
-            .build()
-            .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+
     }
 
     @Command("remove-role <member> <role>")
     @Description("Removes a role from the user")
-    suspend fun removeRole(sender: SlashCommandActor, member: Member, role: Role) {
+    fun removeRole(sender: SlashCommandActor, member: Member, role: Role) {
         if (!member.roles.contains(role)) {
             EmbedBuilder()
                 .setTitle("Error while executing command...")
@@ -45,13 +57,23 @@ object RoleManagementCommands {
             return
         }
 
-        sender.commandEvent().guild!!.removeRoleFromMember(member, role).queue()
-
-        EmbedBuilder()
-            .setTitle("Role Removed!")
-            .setDescription("Successfully removed the role `${role.name}` from ${member.asMention}!")
-            .setColor(Color.GREEN)
-            .build()
-            .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+        sender.commandEvent().guild!!.removeRoleFromMember(member, role).queue(
+            {
+                EmbedBuilder()
+                    .setTitle("Role Removed!")
+                    .setDescription("Successfully removed the role `${role.name}` from ${member.asMention}!")
+                    .setColor(Color.GREEN)
+                    .build()
+                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            },
+            {
+                EmbedBuilder()
+                    .setTitle("Error while executing command...")
+                    .setDescription("Insufficient permissions to remove the role!")
+                    .setColor(Color.RED)
+                    .build()
+                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            }
+        )
     }
 }

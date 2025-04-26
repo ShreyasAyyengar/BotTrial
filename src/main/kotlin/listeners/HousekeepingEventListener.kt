@@ -5,6 +5,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 object HousekeepingEventListener : ListenerAdapter() {
     override fun onGuildJoin(event: GuildJoinEvent) {
-        // TODO welcome message here
+
     }
 }

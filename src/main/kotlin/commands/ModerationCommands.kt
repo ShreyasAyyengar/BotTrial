@@ -1,14 +1,17 @@
 package dev.shreyasayyengar.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import revxrsal.commands.annotation.Command
 import revxrsal.commands.annotation.Optional
 import revxrsal.commands.annotation.Range
 import revxrsal.commands.jda.actor.SlashCommandActor
+import revxrsal.commands.jda.annotation.CommandPermission
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
+@CommandPermission(Permission.ADMINISTRATOR)
 object ModerationCommands {
     @Command("ban <member> <deletion-timeframe> <unit>")
     fun ban(
