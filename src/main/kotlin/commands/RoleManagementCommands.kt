@@ -22,26 +22,23 @@ object RoleManagementCommands {
             return
         }
 
-        sender.commandEvent().guild!!.addRoleToMember(member, role).queue(
-            {
-                EmbedBuilder()
-                    .setTitle("Role Assigned!")
-                    .setDescription("Successfully assigned the role `${role.name}` to ${member.asMention}!")
-                    .setColor(Color.GREEN)
-                    .build()
-                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
-            },
-            {
-                EmbedBuilder()
-                    .setTitle("Error while executing command...")
-                    .setDescription("Insufficient permissions to assign the role!")
-                    .setColor(Color.RED)
-                    .build()
-                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
-            }
-        )
+        try {
+            sender.commandEvent().guild!!.addRoleToMember(member, role).queue()
 
-
+            EmbedBuilder()
+                .setTitle("Role Assigned!")
+                .setDescription("Successfully assigned the role `${role.name}` to ${member.asMention}!")
+                .setColor(Color.GREEN)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+        } catch (_: Exception) {
+            EmbedBuilder()
+                .setTitle("Error while executing command...")
+                .setDescription("Insufficient permissions to assign the role!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+        }
     }
 
     @Command("remove-role <member> <role>")
@@ -57,23 +54,22 @@ object RoleManagementCommands {
             return
         }
 
-        sender.commandEvent().guild!!.removeRoleFromMember(member, role).queue(
-            {
-                EmbedBuilder()
-                    .setTitle("Role Removed!")
-                    .setDescription("Successfully removed the role `${role.name}` from ${member.asMention}!")
-                    .setColor(Color.GREEN)
-                    .build()
-                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
-            },
-            {
-                EmbedBuilder()
-                    .setTitle("Error while executing command...")
-                    .setDescription("Insufficient permissions to remove the role!")
-                    .setColor(Color.RED)
-                    .build()
-                    .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
-            }
-        )
+        try {
+            sender.commandEvent().guild!!.removeRoleFromMember(member, role).queue()
+
+            EmbedBuilder()
+                .setTitle("Role Removed!")
+                .setDescription("Successfully removed the role `${role.name}` from ${member.asMention}!")
+                .setColor(Color.GREEN)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+        } catch (_: Exception) {
+            EmbedBuilder()
+                .setTitle("Error while executing command...")
+                .setDescription("Insufficient permissions to remove the role!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+        }
     }
 }

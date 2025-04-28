@@ -23,11 +23,11 @@ object MongoService {
                 .applyConnectionString(ConnectionString(Credentials.MONGO_URL))
                 .build()
         )
-        pointsCollection = mongoClient.getDatabase("customers").getCollection("customers")
+        pointsCollection = mongoClient.getDatabase("points").getCollection("user_points")
     }
 
     suspend fun addPoint(snowflakeId: Long, amount: Int) = withContext(Dispatchers.IO) {
-        val document = Document.parse(Json.encodeToString(Points.serializer(), Points(snowflakeId, amount)))
+        val document = Document.parse(Json.encodeToString(Points.serializer(), Points(snowflakeId.toString(), amount)))
 
         pointsCollection.replaceOne(
             Filters.eq("_id", snowflakeId.toString()),
@@ -45,7 +45,7 @@ object MongoService {
     @Serializable
     class Points(
         @SerialName("_id")
-        val snowflakeId: Long,
+        val snowflakeId: String,
         val amount: Int
     )
 }

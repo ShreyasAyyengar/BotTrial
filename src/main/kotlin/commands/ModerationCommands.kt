@@ -3,7 +3,9 @@ package dev.shreyasayyengar.commands
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.exceptions.HierarchyException
 import revxrsal.commands.annotation.Command
+import revxrsal.commands.annotation.Named
 import revxrsal.commands.annotation.Optional
 import revxrsal.commands.annotation.Range
 import revxrsal.commands.jda.actor.SlashCommandActor
@@ -17,7 +19,7 @@ object ModerationCommands {
     fun ban(
         sender: SlashCommandActor,
         member: Member,
-        @Range(min = 0.0) @Optional deletionTimeframe: Int = 0,
+        @Named("deletion-timeframe") @Range(min = 0.0) @Optional deletionTimeframe: Int = 0,
         @Optional unit: TimeUnit? = null
     ) {
         // specified a unit but no deletion timeframe
@@ -31,8 +33,17 @@ object ModerationCommands {
             return
         }
 
-        if (unit != null) member.ban(deletionTimeframe, unit).queue()
-        else member.ban(0, TimeUnit.SECONDS).queue()
+        try {
+            if (unit != null) member.ban(deletionTimeframe, unit).queue()
+            else member.ban(0, TimeUnit.SECONDS).queue()
+        } catch (_: HierarchyException) {
+            EmbedBuilder()
+                .setTitle("Insufficient permissions to ban ${member.effectiveName}!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            return
+        }
 
         EmbedBuilder()
             .setTitle("Banned!")
@@ -44,7 +55,16 @@ object ModerationCommands {
 
     @Command("kick <member>")
     fun kick(sender: SlashCommandActor, member: Member) {
-        member.kick().queue()
+        try {
+            member.kick().queue()
+        } catch (_: HierarchyException) {
+            EmbedBuilder()
+                .setTitle("Insufficient permissions to kick ${member.effectiveName}!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            return
+        }
 
         EmbedBuilder()
             .setTitle("Kicked!")
@@ -61,7 +81,23 @@ object ModerationCommands {
         @Range(min = 0.0) time: Long,
         unit: TimeUnit
     ) {
-        member.timeoutFor(time, unit).queue()
+        try {
+            member.timeoutFor(time, unit).queue()
+        } catch (_: IllegalArgumentException) {
+            EmbedBuilder()
+                .setTitle("The time you provided was so short, it's already in the past!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            return
+        } catch (_: HierarchyException) {
+            EmbedBuilder()
+                .setTitle("Insufficient permissions to timeout ${member.effectiveName}!")
+                .setColor(Color.RED)
+                .build()
+                .also { sender.commandEvent().replyEmbeds(it).setEphemeral(true).queue() }
+            return
+        }
 
         EmbedBuilder()
             .setTitle("Muted!")
