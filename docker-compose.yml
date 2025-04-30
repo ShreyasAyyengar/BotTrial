@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7.2
+    container_name: universalapi-redis
+    ports:
+      - "127.0.0.1:6379:6379"  # Publish Redis port to the host
+  mongo:
+    image: mongo:7.0
+    container_name: universalapi-mongo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"  # Binds only to localhost
+    volumes:
+      - mongo-data:/data/db
+  universalapi:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: universalapi
+    depends_on:
+      - redis
+      - mongo
+      - discord
+    network_mode: host  # Use host networking so localhost is shared with the host
+    environment:
+      - SPRING_REDIS_HOST=localhost
+      - SPRING_REDIS_PORT=6379
+      - SERVER_PORT=9504
+      - DISCORD_WEBHOOK_URL=__DISCORD_WEBHOOK__
+      - DISCORD_HOLLYWOOD_WEBHOOK_URL=__DISCORD_HOLLYWOOD_WEBHOOK_URL__
+      - DISCORD_JAPAN_WEBHOOK_URL=__DISCORD_JAPAN_WEBHOOK_URL__
+      - DISCORD_ORLANDO_WEBHOOK_URL=__DISCORD_ORLANDO_WEBHOOK_URL__
+      - API_KEY=__API_KEY__
+      - DISCORD_BOT_TOKEN=__DISCORD_BOT_TOKEN__
+      - UNIVERSAL_ENDPOINT_VIRTUAL_QUEUE=__UNIVERSAL_ENDPOINT_VIRTUAL_QUEUE__
+      - UNIVERSAL_ENDPOINT_WAIT_TIMES=__UNIVERSAL_ENDPOINT_WAIT_TIMES__
+      - OPENAI_API_KEY=__OPENAI_API_KEY__
+      - EPIC_HOURS_ALERT=__EPIC_HOURS_ALERT__
+  discord:
+    build:
+      context: ./discord
+      dockerfile: Dockerfile
+    container_name: discord
+    depends_on:
+      - redis
+      - mongo
+    ports:
+      - "127.0.0.1:9506:9506"  # Only bind to localhost
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017
+      - SPRING_REDIS_HOST=localhost
+      - SPRING_REDIS_PORT=6379
+      - SERVER_PORT=9506
+      - DISCORD_WEBHOOK_URL=__DISCORD_WEBHOOK__
+      - DISCORD_HOLLYWOOD_WEBHOOK_URL=__DISCORD_HOLLYWOOD_WEBHOOK_URL__
+      - DISCORD_JAPAN_WEBHOOK_URL=__DISCORD_JAPAN_WEBHOOK_URL__
+      - DISCORD_ORLANDO_WEBHOOK_URL=__DISCORD_ORLANDO_WEBHOOK_URL__
+      - API_KEY=__API_KEY__
+      - DISCORD_BOT_TOKEN=__DISCORD_BOT_TOKEN__
+      - ADDITIONAL_EPIC_WEBHOOK=__ADDITIONAL_EPIC_WEBHOOK__
+      - VIRTUAL_LINE_HP_WEBHOOKS=__VIRTUAL_LINE_HP_WEBHOOKS__
+      - UNIVERSAL_ENDPOINT_VIRTUAL_QUEUE=__UNIVERSAL_ENDPOINT_VIRTUAL_QUEUE__
+      - UNIVERSAL_ENDPOINT_WAIT_TIMES=__UNIVERSAL_ENDPOINT_WAIT_TIMES__
+      - OPENAI_API_KEY=__OPENAI_API_KEY__
+volumes:
+  mongo-data:
